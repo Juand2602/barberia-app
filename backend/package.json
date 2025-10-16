@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/app.ts",
     "build": "tsc && npm run prisma:generate",
-    "start": "dotenvx run -- npx prisma db push && dotenvx run -- node dist/app.js",
+    "start": "./start.sh",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:studio": "prisma studio",

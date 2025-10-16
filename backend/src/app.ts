@@ -64,7 +64,8 @@ app.use('/api/empleados', empleadosRoutes);
 app.use('/api/citas', citasRoutes);
 app.use('/api/transacciones', transaccionesRoutes);
 app.use('/api/transacciones', transaccionesRoutes);
-app.use('/api/cierrecaja', cierrecajaRoutes);  
+app.use('/api/cierrecaja', cierrecajaRoutes);
+app.use('/api/reportes', reportesRoutes);
 app.use('/webhook', webhookRoutes); // 🆕 Webhook de WhatsApp (sin /api)
 
 // ==================== ERROR HANDLING ====================

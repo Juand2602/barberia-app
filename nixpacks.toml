@@ -1,0 +1,16 @@
+[phases.setup]
+# Especifica explícitamente que necesitas Node.js y npm.
+# Puedes usar la versión que prefieras (nodejs_18, nodejs_20, etc.)
+
+nixPkgs = ["nodejs_20", "npm"]
+
+[phases.build]
+# Este comando se ejecutará durante la fase de construcción.
+# Nixpacks ya estará en el directorio raíz, así que navegas a 'backend'.
+
+cmds = ["cd backend && npm install && npm run build"]
+
+[start]
+# Este comando se ejecutará para iniciar tu aplicación.
+
+cmd = "cd backend && npm start"

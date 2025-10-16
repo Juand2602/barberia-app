@@ -7,6 +7,7 @@ CREATE TABLE "Cliente" (
     "fechaRegistro" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "notas" TEXT,
     "activo" BOOLEAN NOT NULL DEFAULT true,
+    "origen" TEXT NOT NULL DEFAULT 'MANUAL',
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );
@@ -54,10 +55,12 @@ CREATE TABLE "Cita" (
     "origen" TEXT NOT NULL DEFAULT 'MANUAL',
     "notas" TEXT,
     "motivoCancelacion" TEXT,
+    "conversacionId" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "Cita_clienteId_fkey" FOREIGN KEY ("clienteId") REFERENCES "Cliente" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Cita_empleadoId_fkey" FOREIGN KEY ("empleadoId") REFERENCES "Empleado" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Cita_empleadoId_fkey" FOREIGN KEY ("empleadoId") REFERENCES "Empleado" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Cita_conversacionId_fkey" FOREIGN KEY ("conversacionId") REFERENCES "Conversacion" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -116,6 +119,34 @@ CREATE TABLE "Configuracion" (
     "updatedAt" DATETIME NOT NULL
 );
 
+-- CreateTable
+CREATE TABLE "Conversacion" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "clienteTelefono" TEXT NOT NULL,
+    "clienteId" TEXT,
+    "estado" TEXT NOT NULL DEFAULT 'ACTIVA',
+    "contexto" TEXT,
+    "paso" TEXT NOT NULL DEFAULT 'INICIAL',
+    "ultimoMensaje" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Conversacion_clienteId_fkey" FOREIGN KEY ("clienteId") REFERENCES "Cliente" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "MensajeWhatsApp" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "conversacionId" TEXT NOT NULL,
+    "waMessageId" TEXT NOT NULL,
+    "remitente" TEXT NOT NULL,
+    "mensaje" TEXT NOT NULL,
+    "tipo" TEXT NOT NULL DEFAULT 'TEXTO',
+    "metadata" TEXT,
+    "timestamp" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "MensajeWhatsApp_conversacionId_fkey" FOREIGN KEY ("conversacionId") REFERENCES "Conversacion" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Cliente_telefono_key" ON "Cliente"("telefono");
 
@@ -124,6 +155,9 @@ CREATE INDEX "Cliente_telefono_idx" ON "Cliente"("telefono");
 
 -- CreateIndex
 CREATE INDEX "Cliente_nombre_idx" ON "Cliente"("nombre");
+
+-- CreateIndex
+CREATE INDEX "Cliente_origen_idx" ON "Cliente"("origen");
 
 -- CreateIndex
 CREATE INDEX "Empleado_activo_idx" ON "Empleado"("activo");
@@ -139,6 +173,9 @@ CREATE INDEX "Cita_empleadoId_fechaHora_idx" ON "Cita"("empleadoId", "fechaHora"
 
 -- CreateIndex
 CREATE INDEX "Cita_estado_idx" ON "Cita"("estado");
+
+-- CreateIndex
+CREATE INDEX "Cita_origen_idx" ON "Cita"("origen");
 
 -- CreateIndex
 CREATE INDEX "Transaccion_fecha_idx" ON "Transaccion"("fecha");
@@ -157,3 +194,21 @@ CREATE INDEX "CierreCaja_fecha_idx" ON "CierreCaja"("fecha");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Configuracion_clave_key" ON "Configuracion"("clave");
+
+-- CreateIndex
+CREATE INDEX "Conversacion_clienteTelefono_idx" ON "Conversacion"("clienteTelefono");
+
+-- CreateIndex
+CREATE INDEX "Conversacion_estado_idx" ON "Conversacion"("estado");
+
+-- CreateIndex
+CREATE INDEX "Conversacion_ultimoMensaje_idx" ON "Conversacion"("ultimoMensaje");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MensajeWhatsApp_waMessageId_key" ON "MensajeWhatsApp"("waMessageId");
+
+-- CreateIndex
+CREATE INDEX "MensajeWhatsApp_conversacionId_idx" ON "MensajeWhatsApp"("conversacionId");
+
+-- CreateIndex
+CREATE INDEX "MensajeWhatsApp_timestamp_idx" ON "MensajeWhatsApp"("timestamp");

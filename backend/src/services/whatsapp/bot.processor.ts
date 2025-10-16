@@ -166,9 +166,16 @@ class BotProcessor {
           orderBy: { precio: 'asc' }
         });
 
+        // Convertir null a undefined para la plantilla
+        const serviciosFormateados = servicios.map(s => ({
+          nombre: s.nombre,
+          precio: s.precio,
+          descripcion: s.descripcion ?? undefined
+        }));
+
         return {
           tipo: 'texto',
-          mensaje: MENSAJES.LISTA_PRECIOS(servicios) + '\n\n' + MENSAJES.PUEDE_SERVIR_MAS(),
+          mensaje: MENSAJES.LISTA_PRECIOS(serviciosFormateados) + '\n\n' + MENSAJES.PUEDE_SERVIR_MAS(),
           siguientePaso: 'PUEDE_SERVIR_MAS'
         };
 
@@ -657,8 +664,8 @@ class BotProcessor {
       data: {
         nombre,
         telefono,
-        origen: 'WHATSAPP',
-        activo: true
+        activo: true,
+        origen: 'WHATSAPP'  // ✅ Ahora existe en el schema
       }
     });
   }
